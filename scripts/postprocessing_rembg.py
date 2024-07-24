@@ -18,6 +18,12 @@ models = [
     "isnet-anime",
 ]
 
+cloth_categories = [
+    "upper",
+    "lower",
+    "full",
+]
+
 class ScriptPostprocessingUpscale(scripts_postprocessing.ScriptPostprocessing):
     name = "Rembg"
     order = 20000
@@ -30,13 +36,21 @@ class ScriptPostprocessingUpscale(scripts_postprocessing.ScriptPostprocessing):
                 return_mask = gr.Checkbox(label="Return mask", value=False)
                 alpha_matting = gr.Checkbox(label="Alpha matting", value=False)
 
-            with gr.Row(visible=False) as alpha_mask_row:
+            with gr.Row(alpha_visible=False) as alpha_mask_row:
                 alpha_matting_erode_size = gr.Slider(label="Erode size", minimum=0, maximum=40, step=1, value=10)
                 alpha_matting_foreground_threshold = gr.Slider(label="Foreground threshold", minimum=0, maximum=255, step=1, value=240)
                 alpha_matting_background_threshold = gr.Slider(label="Background threshold", minimum=0, maximum=255, step=1, value=10)
 
+            with gr.Row(cloth_visible=False) as cloth_category_row:
+                cloth_category = gr.Dropdown(label="Cloth Category", choices=cloth_categories, value="None")
+
+            if model == "u2net_cloth_seg":
+                fn= lambda x: gr.update(cloth_visible=x),
+                inputs=[model],
+                outputs=[cloth_category_row],
+
             alpha_matting.change(
-                fn=lambda x: gr.update(visible=x),
+                fn=lambda x: gr.update(alpha_visible=x),
                 inputs=[alpha_matting],
                 outputs=[alpha_mask_row],
             )
@@ -49,9 +63,10 @@ class ScriptPostprocessingUpscale(scripts_postprocessing.ScriptPostprocessing):
             "alpha_matting_foreground_threshold": alpha_matting_foreground_threshold,
             "alpha_matting_background_threshold": alpha_matting_background_threshold,
             "alpha_matting_erode_size": alpha_matting_erode_size,
+            "cloth_category": cloth_category,
         }
 
-    def process(self, pp: scripts_postprocessing.PostprocessedImage, enable, model, return_mask, alpha_matting, alpha_matting_foreground_threshold, alpha_matting_background_threshold, alpha_matting_erode_size):
+    def process(self, pp: scripts_postprocessing.PostprocessedImage, enable, model, return_mask, alpha_matting, alpha_matting_foreground_threshold, alpha_matting_background_threshold, alpha_matting_erode_size, cloth_category):
         if not enable:
             return
 
