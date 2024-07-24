@@ -1,15 +1,5 @@
-# Rembg
+Someone with more experience than me- please edit and review this.
 
-Extension for [webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui). Removes backgrounds from pictures.
+The absense of variable "cloth_category" results in "u2net_cloth_seg" outputting segmented clothes in one concatenated image, as mentioned in Issue #1.
 
-![](preview.png)
-
-Find the UI for rembg in the Extras tab after installing the extension.
-
-# Installation
-
-Install from webui's Extensions tab.
-
-# Credits
-
-* rembg library that does all the work: https://github.com/danielgatis/rembg
+I do not know how any of this works, so I have written basic code that implements a dropdown box("upper","lower,"full") that assigns a value to "cloth_category". 
